@@ -11,6 +11,7 @@ import org.hibernate.Transaction;
 import util.HibernateUtil;
 
 import com.nhuocquy.dao.exception.DAOException;
+import com.nhuocquy.model.Account;
 import com.nhuocquy.model.Conversation;
 import com.nhuocquy.model.Friend;
 import com.nhuocquy.model.MessageChat;
@@ -86,6 +87,15 @@ public class DAOConversation extends DAO<Conversation, Long> {
 				conversation = new Conversation();
 				conversation.setFriends(friendDAO.getList(ids));
 				conversation = (Conversation) session.merge(conversation);
+				// luu convertation vao accoutn
+				Account ac = null;
+				String sqlSelectAccout = "insert into acc_con (idacc, idcon) values (:idacc, :idcon)";
+				sqlQuery = session.createSQLQuery(sqlSelectAccout);
+				sqlQuery.setParameter("idcon", conversation.getIdCon());
+				for (long l : ids) {
+					sqlQuery.setParameter("idacc", l);
+					sqlQuery.executeUpdate();
+				}
 			} else {
 				// TODO Bỗ sung code chỉ lấy tin nhắn cuối
 				// MessageChat messageChat =
