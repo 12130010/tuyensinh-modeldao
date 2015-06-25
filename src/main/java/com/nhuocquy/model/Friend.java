@@ -17,7 +17,7 @@ public class Friend implements Serializable {
 	@GeneratedValue
 	private long idFriend;
 	private String name;
-
+	private String avatar;
 	public Friend() {
 	}
 
@@ -42,7 +42,13 @@ public class Friend implements Serializable {
 	public void setName(String name) {
 		this.name = name;
 	}
+	public String getAvatar() {
+		return avatar;
+	}
 
+	public void setAvatar(String avatar) {
+		this.avatar = avatar;
+	}
 	@Override
 	public boolean equals(Object obj) {
 		if (obj==null ||  !(obj instanceof Friend))
@@ -54,5 +60,7 @@ public class Friend implements Serializable {
 	public String toString() {
 		return "Friend [idFriend=" + idFriend + ", name=" + name + "]";
 	}
+
+	
 	
 }

@@ -18,4 +18,8 @@ public class DAOFriend extends DAO<Friend, Long> {
 		}
 		return list;
 	}
+	public static void main(String[] args) throws DAOException {
+		DAOFriend daoFriend = new DAOFriend(Friend.class);
+		System.out.println(daoFriend.getList(1l,2l));
+	}
 }

@@ -44,12 +44,14 @@ public abstract class DAO<T, E> implements GeneralDAO<T, E> {
 	@SuppressWarnings("unchecked")
 	public T merge(T object) throws DAOException {
 		Session session = HibernateUtil.openSession();
+		System.out.println("***" + object);
 		T t = null;
 		Transaction transaction = null;
 		try {
 			transaction = session.getTransaction();
 			transaction.begin();
 			t = (T) session.merge(object);
+			System.out.println("***" + t);
 			transaction.commit();
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
@@ -99,11 +101,15 @@ public abstract class DAO<T, E> implements GeneralDAO<T, E> {
 	public T findById(E key) throws DAOException {
 		Session session = HibernateUtil.openSession();
 		T t = null;
+		Query query = null;
 		Transaction transaction = null;
 		try {
 			transaction = session.getTransaction();
 			transaction.begin();
-			t = (T) session.get(entytiClass, (Serializable) key);
+//			t = (T) session.get(entytiClass, (Serializable) key);
+			query = session.createQuery("from "+ entytiClass.getSimpleName()+ " where id = :id");
+			query.setParameter("id", key);
+			t = (T) query.uniqueResult();
 			transaction.commit();
 		} catch (Exception e) {
 			transaction.rollback();
@@ -112,6 +118,25 @@ public abstract class DAO<T, E> implements GeneralDAO<T, E> {
 			session.close();
 		}
 		return t;
+	}
+	@SuppressWarnings("unchecked")
+	public E save(T object) throws DAOException {
+		Session session = HibernateUtil.openSession();
+		E e = null;
+		Transaction transaction = null;
+		try {
+			transaction = session.getTransaction();
+			transaction.begin();
+			e = (E) session.save(object);
+			transaction.commit();
+		} catch (Exception ex) {
+			transaction.rollback();
+			ex.printStackTrace();
+			throw new DAOException(ex.getMessage());
+		} finally {
+			session.close();
+		}
+		return e;
 	}
 	// Session session = HibernateUtil.openSession();
 	// Transaction transaction = null;

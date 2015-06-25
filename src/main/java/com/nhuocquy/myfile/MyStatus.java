@@ -1,5 +1,9 @@
 package com.nhuocquy.myfile;
 
+/**
+ * @author NhuocQuy
+ *
+ */
 public class MyStatus {
 	public static final int CODE_SUCCESS = 1;
 	public static final int CODE_FAIL = 0;
@@ -41,5 +45,11 @@ public class MyStatus {
 	public void setObj(Object obj) {
 		this.obj = obj;
 	}
+	@Override
+	public String toString() {
+		return "MyStatus [code=" + code + ", message=" + message + ", obj="
+				+ obj + "]";
+	}
+	
 	
 }

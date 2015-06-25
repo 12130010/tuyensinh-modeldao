@@ -29,11 +29,11 @@ public class DAOConversation extends DAO<Conversation, Long> {
 	public Conversation findById(Long key) throws DAOException {
 		Session session = HibernateUtil.openSession();
 		Transaction transaction = null;
-		SQLQuery sqlQuery = null;
 		Query query = null;
-		String sqlAllIdcon = "select idcon from con_fri GROUP BY idcon HAVING count(*) = :len";
 		String sqlSearchCon = "from " + Conversation.class.getName()
 				+ " where idcon = :idcon";
+		String setReaded = "update con_fri set readed = :readed  where idcon = :idcon";
+		SQLQuery sqlQuery = null;
 		Conversation conversation = null;
 		try {
 			transaction = session.getTransaction();
@@ -41,6 +41,10 @@ public class DAOConversation extends DAO<Conversation, Long> {
 			query = session.createQuery(sqlSearchCon);
 			query.setParameter("idcon", key);
 			conversation = (Conversation) query.uniqueResult();
+			sqlQuery = session.createSQLQuery(setReaded);
+			sqlQuery.setParameter("readed", 1);
+			sqlQuery.setParameter("idcon", key);
+			sqlQuery.executeUpdate();
 			transaction.commit();
 		} catch (Exception e) {
 			transaction.rollback();
@@ -57,7 +61,7 @@ public class DAOConversation extends DAO<Conversation, Long> {
 		Transaction transaction = null;
 		SQLQuery sqlQuery = null;
 		Query query = null;
-		String sqlAllIdcon = "select idcon from con_fri GROUP BY idcon HAVING count(*) = :len";
+		String sqlAllIdcon = "select idcon from con_fri where idcon in (select idcon from con_fri where idfri  = :idfri0) GROUP BY idcon HAVING count(*) = :len ";
 		String sqlSearchCon = "from " + Conversation.class.getName()
 				+ " where idcon = :idcon";
 		Conversation conversation = null;
@@ -66,6 +70,7 @@ public class DAOConversation extends DAO<Conversation, Long> {
 			transaction.begin();
 			sqlQuery = session.createSQLQuery(sqlAllIdcon);
 			sqlQuery.setParameter("len", ids.length);
+			sqlQuery.setParameter("idfri0", ids[0]);
 			List<BigInteger> list = sqlQuery.list();
 			int lenIDs = ids.length - 1;
 			query = session.createQuery(sqlSearchCon);
@@ -83,12 +88,11 @@ public class DAOConversation extends DAO<Conversation, Long> {
 					}
 				}
 			}
-			if (conversation == null) {
+			if (conversation == null) { // không tìm thấy conversation
 				conversation = new Conversation();
 				conversation.setFriends(friendDAO.getList(ids));
 				conversation = (Conversation) session.merge(conversation);
 				// luu convertation vao accoutn
-				Account ac = null;
 				String sqlSelectAccout = "insert into acc_con (idacc, idcon) values (:idacc, :idcon)";
 				sqlQuery = session.createSQLQuery(sqlSelectAccout);
 				sqlQuery.setParameter("idcon", conversation.getIdCon());
@@ -96,12 +100,12 @@ public class DAOConversation extends DAO<Conversation, Long> {
 					sqlQuery.setParameter("idacc", l);
 					sqlQuery.executeUpdate();
 				}
-			} else {
-				// TODO Bỗ sung code chỉ lấy tin nhắn cuối
+			} else { // bổ sung code lấy danh sách tin nhắn giới hạn
+				// TODO Bá»— sung code chá»‰ láº¥y tin nháº¯n cuá»‘i
 				// MessageChat messageChat =
 				// messageChatDAO.getLastMessageChatOfConversation(conversation.getIdCon());
 				// if(messageChat != null){
-				// conversation.addMessageChat(messageChat);
+//				 conversation.addMessageChat(messageChat);
 				// }
 			}
 			transaction.commit();
@@ -153,7 +157,7 @@ public class DAOConversation extends DAO<Conversation, Long> {
 
 	public static void main(String[] args) throws DAOException {
 		System.out.println(new DAOConversation(Conversation.class)
-				.getConversation(1, 2, 3));
+				.findById(6l));
 		System.out
 				.println(new DAOConversation(Conversation.class).findById(1l));
 		HibernateUtil.shutdown();

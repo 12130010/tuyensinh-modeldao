@@ -5,7 +5,7 @@ import java.util.List;
 import com.nhuocquy.dao.exception.DAOException;
 
 public interface GeneralDAO<T, E> {
-	
+
 	public List<T> selectAll() throws DAOException;
 
 	public T merge(T object) throws DAOException;
@@ -15,4 +15,6 @@ public interface GeneralDAO<T, E> {
 	public boolean delete(T object) throws DAOException;
 
 	public T findById(E key) throws DAOException;
+
+	public E save(T object) throws DAOException;
 }

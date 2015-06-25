@@ -14,10 +14,11 @@ import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.persistence.UniqueConstraint;
 
 @Entity
 @Table(name = "conversation")
-public class Conversation implements Serializable{
+public class Conversation implements Serializable {
 	@Transient
 	private static final long serialVersionUID = 8570601163700722869L;
 	@Transient
@@ -25,22 +26,21 @@ public class Conversation implements Serializable{
 	@Id
 	@GeneratedValue
 	private long idCon;
-	
+
 	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-	@JoinTable(name = "con_fri",joinColumns=@JoinColumn(name="idcon"),
-	inverseJoinColumns=@JoinColumn(name="idfri"))
+	@JoinTable(name = "con_fri",joinColumns  = @JoinColumn(name = "idcon"),inverseJoinColumns   = @JoinColumn(name = "idfri"))
 	private List<Friend> friends;
 	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-	@JoinTable(name = "con_mes", joinColumns=@JoinColumn(name="idcon"),
-	inverseJoinColumns=@JoinColumn(name="idmes"))
+	@JoinTable(name = "con_mes",joinColumns  = @JoinColumn(name = "idcon"), inverseJoinColumns  = @JoinColumn(name = "idmes"))
 	private List<MessageChat> listMes;
-	
+
 	public Conversation() {
 		friends = new ArrayList<Friend>();
 		listMes = new ArrayList<MessageChat>();
 	}
 
-	public Conversation(long idCon, List<Friend> friends, List<MessageChat> listMes) {
+	public Conversation(long idCon, List<Friend> friends,
+			List<MessageChat> listMes) {
 		super();
 		this.idCon = idCon;
 		this.friends = friends;
@@ -70,20 +70,23 @@ public class Conversation implements Serializable{
 	public void setListMes(List<MessageChat> listMes) {
 		this.listMes = listMes;
 	}
-	public String selectNames(){
+
+	public String selectNames() {
 		StringBuilder sb = new StringBuilder();
 		for (Friend f : friends) {
 			sb.append(f.getName());
 			sb.append(", ");
 		}
-		sb.delete(sb.length() -1, sb.length());
-		
+		sb.delete(sb.length() - 2, sb.length());
+
 		return sb.toString();
 	}
-	public boolean containIDFri(long idFri){
+
+	public boolean containIDFri(long idFri) {
 		return friends.contains(new Friend(idFri, ""));
 	}
-	public boolean addMessageChat(MessageChat messageChat){
+
+	public boolean addMessageChat(MessageChat messageChat) {
 		return listMes.add(messageChat);
 	}
 
@@ -100,5 +103,5 @@ public class Conversation implements Serializable{
 	public void setReaded(boolean readed) {
 		this.readed = readed;
 	}
-	
+
 }
